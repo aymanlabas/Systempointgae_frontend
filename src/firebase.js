@@ -4,16 +4,14 @@ import { getFirestore } from 'firebase/firestore';
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBih6rHgsh_iu6sNCsNHNtIb_Wpt0j9cXE",
-  authDomain: "app-pointage-e3abd.firebaseapp.com",
-  databaseURL: "https://app-pointage-e3abd-default-rtdb.firebaseio.com",
-  projectId: "app-pointage-e3abd",
-  storageBucket: "app-pointage-e3abd.firebasestorage.app",
-  messagingSenderId: "651077053093",
-  appId: "1:651077053093:web:870d488ddad4ee43593b4c",
-  measurementId: "G-9XKVLLWN18"
+  apiKey: "AIzaSyC8oH2o_CYmIPFlVwPCS4Okt_txmaflh-0",
+  authDomain: "projet-hr.firebaseapp.com",
+  projectId: "projet-hr",
+  storageBucket: "projet-hr.firebasestorage.app",
+  messagingSenderId: "170502723715",
+  appId: "1:170502723715:web:c6c4cbe3171e709c9263b6",
+  measurementId: "G-D9ZQGNK9X3"
 };
-
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);

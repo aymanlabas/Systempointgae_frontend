@@ -314,18 +314,25 @@ a:hover {
   padding: 2rem;
 }
 
-/* Dashboard layout */
-.layout {
+/* App Layout with Sidebar */
+.app-layout {
   display: flex;
   min-height: 100vh;
 }
 
-.sidebar {
-  width: 280px;
-  border-right: var(--glass-border);
-  background: var(--bg-dark-secondary);
+.app-main {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 100vh;
+}
+
+/* Legacy support */
+.layout {
+  display: flex;
+  min-height: 100vh;
 }
 
 .main-content {
@@ -333,6 +340,290 @@ a:hover {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+}
+
+/* KPI Mini Cards (shared) */
+.kpi-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.kpi-mini {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem 1.25rem;
+}
+
+.kpi-mini-val {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1;
+}
+
+.kpi-mini-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 0.15rem;
+}
+
+/* Chart card shared */
+.chart-card {
+  padding: 1.5rem;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.chart-header h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Notification rows (Notifications page) */
+.notif-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  transition: background 0.2s;
+  cursor: default;
+}
+
+.notif-row:hover {
+  background: var(--table-hover);
+}
+
+.notif-unread {
+  background: rgba(79, 70, 229, 0.03);
+}
+
+.notif-type-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notif-type-icon.color-blue {
+  background: rgba(79, 70, 229, 0.1);
+  color: var(--primary-light);
+}
+
+.notif-type-icon.color-green {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.notif-type-icon.color-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+
+.notif-type-icon.color-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+.notif-row-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  cursor: pointer;
+}
+
+.notif-row-header {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+}
+
+.notif-row-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.notif-row-msg {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.notif-row-time {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.notif-row-actions {
+  display: flex;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+/* Schedule styles */
+.schedule-time-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.time-chip {
+  background: rgba(79, 70, 229, 0.1);
+  color: var(--primary-light);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.time-separator {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.days-display {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.day-chip {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: var(--border-color);
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.day-chip.active {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+}
+
+.days-picker {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.day-picker-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.day-picker-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary-light);
+}
+
+.day-picker-btn.active {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-color: var(--primary);
+  color: white;
+}
+
+/* Table shared (ensure always available) */
+.table-card {
+  padding: 1.5rem;
+}
+
+.card-header {
+  border-bottom: var(--glass-border);
+  padding-bottom: 1rem;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  border-bottom: var(--glass-border);
+}
+
+.data-table td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover {
+  background: var(--table-hover);
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.text-primary-light {
+  color: var(--primary-light);
+}
+
+/* mb utility */
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.capitalize {
+  text-transform: capitalize;
 }
 
 /* Animations */

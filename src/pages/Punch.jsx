@@ -3,6 +3,8 @@ import { Camera, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import FaceRecognitionService from '../services/FaceRecognitionService';
 import FirebaseService from '../services/FirebaseService';
 import TelegramService from '../services/TelegramService';
+import ApiService from '../services/ApiService';
+import useWelcomeSound from '../hooks/useWelcomeSound';
 import './Punch.css';
 
 export default function Punch() {
@@ -18,6 +20,18 @@ export default function Punch() {
     const [faceMatcher, setFaceMatcher] = useState(null);
     const [employees, setEmployees] = useState([]);
     const [identifiedUser, setIdentifiedUser] = useState(null);
+
+    // ── Welcome Sound ────────────────────────────────────────────────────────
+    // Switch mode to 'mp3' and set audioSrc if you prefer the static file.
+    // mode: 'tts'  → uses browser SpeechSynthesis (no file needed)
+    // mode: 'mp3'  → plays /public/audio/welcome.mp3 (falls back to TTS if blocked)
+    const { playWelcome } = useWelcomeSound({
+        mode: 'tts',            // ← Change to 'mp3' for Solution 1
+        // audioSrc: '/audio/welcome.mp3',  // ← Uncomment for Solution 1
+        delayMs: 500,           // small delay before sound plays
+        cooldownMs: 10_000,     // 10-second cooldown per person
+        ttsLang: 'fr-FR',
+    });
 
     useEffect(() => {
         const initializeSystem = async () => {
@@ -158,6 +172,30 @@ export default function Punch() {
 
             setStatus('success'); // Succès confirmé avant affichage du msg
 
+            // ── 🔊 Play welcome audio on successful recognition ───────────────
+            // Triggered here — right after identity is confirmed & before DB save.
+            // Only plays for check-in; remove the condition if you also want it
+            // to play on check-out.
+            if (actionType === 'check-in') {
+                playWelcome(employee.name); // e.g. "Bonjour Ayman, bienvenue !"
+            }
+
+            // --- GÉOLOCALISATION ---
+            let location = null;
+            try {
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+                });
+                location = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                    accuracy: position.coords.accuracy
+                };
+            } catch (geoErr) {
+                console.warn("Géolocalisation inaccessible:", geoErr);
+                // On continue quand même le pointage, mais sans location
+            }
+
             // Message dynamique pour l'écran
             const greetingMsg = actionType === 'check-in'
                 ? `Entrée: Bienvenue ${employee.name} !`
@@ -168,15 +206,17 @@ export default function Punch() {
             const attendanceRecord = {
                 userId: employee.id,
                 userName: employee.name,
-                date: todayDate,
-                time: time,
-                timestamp: new Date().toISOString(),
                 type: actionType,
+                location: location, // ← Coordonnées GPS ajoutées ici
+                method: 'face',
                 confidence: distance
             };
-            await FirebaseService.saveData('attendance', attendanceRecord);
 
-            // Notification Telegram Automatique avec le bon type
+            // Utilisation de l'ApiService (Backend Express) au lieu de Firebase direct
+            // Note: ApiService s'occupe du timestamp et de la date côté serveur pour plus de sécurité
+            await ApiService.punch(attendanceRecord);
+
+            // Notification Telegram Automatique
             TelegramService.sendNotification(employee.name, employee.department, actionType, time);
 
         } catch (error) {

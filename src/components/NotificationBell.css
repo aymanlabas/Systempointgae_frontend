@@ -1,0 +1,207 @@
+.notif-bell-wrapper {
+    position: relative;
+}
+
+.notif-bell-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.notif-bell-btn:hover {
+    background: rgba(79, 70, 229, 0.1);
+    color: var(--primary-light);
+    border-color: var(--primary);
+}
+
+.notif-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    background: var(--danger);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid var(--bg-dark-secondary);
+}
+
+.notif-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 340px;
+    max-height: 480px;
+    display: flex;
+    flex-direction: column;
+    z-index: 500;
+}
+
+.notif-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1rem 0.75rem;
+    border-bottom: var(--glass-border);
+    flex-shrink: 0;
+}
+
+.notif-panel-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.notif-mark-all {
+    font-size: 0.75rem;
+    color: var(--primary-light);
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: inherit;
+    font-weight: 500;
+}
+
+.notif-mark-all:hover {
+    text-decoration: underline;
+}
+
+.notif-list {
+    overflow-y: auto;
+    flex: 1;
+}
+
+.notif-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    border-bottom: var(--glass-border);
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+}
+
+.notif-item:hover {
+    background: var(--table-hover);
+}
+
+.notif-item.unread {
+    background: rgba(79, 70, 229, 0.04);
+}
+
+.notif-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 0.35rem;
+    background: var(--border-color);
+}
+
+.notif-item.unread.color-blue .notif-dot {
+    background: var(--primary-light);
+    box-shadow: 0 0 6px var(--primary-light);
+}
+
+.notif-item.unread.color-green .notif-dot {
+    background: var(--success);
+    box-shadow: 0 0 6px var(--success);
+}
+
+.notif-item.unread.color-warning .notif-dot {
+    background: var(--warning);
+    box-shadow: 0 0 6px var(--warning);
+}
+
+.notif-item.unread.color-danger .notif-dot {
+    background: var(--danger);
+    box-shadow: 0 0 6px var(--danger);
+}
+
+.notif-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.notif-msg-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.notif-msg {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notif-time {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.notif-actions {
+    display: flex;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+.notif-actions button {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    border: none;
+    background: var(--bg-card);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s;
+}
+
+.notif-item:hover .notif-actions button {
+    opacity: 1;
+}
+
+.notif-actions button:hover {
+    background: var(--primary);
+    color: white;
+}

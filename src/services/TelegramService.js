@@ -3,8 +3,8 @@ class TelegramService {
         // ==========================================
         // ⚠️ À REMPLACER PAR TES PROPRES VALEURS ⚠️
         // ==========================================
-        this.botToken = '8773838648:AAGdXGg6K0MpNlJ3q2jXUAugdrlq0zc7VVs';
-        this.chatId = '8574705311';
+        this.botToken = '8730867601:AAFSTbRggpgkWfo5MabojM3PdAzkYrcrx20';
+        this.chatId = '1367086686';
     }
 
     async sendNotification(employeeName, department, type, time) {

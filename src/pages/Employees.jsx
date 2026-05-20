@@ -11,11 +11,12 @@ export default function Employees() {
     const { createUser } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [employees, setEmployees] = useState([]);
+    const [departments, setDepartments] = useState([]);
     const [loading, setLoading] = useState(true);
 
     // Modal State (Add/Edit)
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentEmp, setCurrentEmp] = useState({ name: '', email: '', password: '', confirmPassword: '', role: 'employee', department: '', descriptor: null, photo: null });
+    const [currentEmp, setCurrentEmp] = useState({ name: '', email: '', password: '', confirmPassword: '', role: 'employee', departmentId: '', descriptor: null, photo: null });
     const [isEditing, setIsEditing] = useState(false);
     const [empFormError, setEmpFormError] = useState('');
 
@@ -29,11 +30,15 @@ export default function Employees() {
     const [isScanningFace, setIsScanningFace] = useState(false);
     const [scanMessage, setScanMessage] = useState('');
 
-    const fetchEmployees = async () => {
+    const fetchData = async () => {
         setLoading(true);
         try {
-            const data = await FirebaseService.getData('users');
-            setEmployees(data);
+            const [empData, deptData] = await Promise.all([
+                FirebaseService.getData('users'),
+                FirebaseService.getData('departments')
+            ]);
+            setEmployees(empData);
+            setDepartments(deptData);
         } catch (error) {
             console.error("Erreur serveur :", error);
         } finally {
@@ -42,7 +47,7 @@ export default function Employees() {
     };
 
     useEffect(() => {
-        fetchEmployees();
+        fetchData();
         FaceRecognitionService.loadModels();
     }, []);
 
@@ -52,14 +57,14 @@ export default function Employees() {
     );
 
     const handleOpenAdd = () => {
-        setCurrentEmp({ name: '', email: '', password: '', confirmPassword: '', role: 'employee', department: '', descriptor: null, photo: null });
+        setCurrentEmp({ name: '', email: '', password: '', confirmPassword: '', role: 'employee', departmentId: '', descriptor: null, photo: null });
         setEmpFormError('');
         setIsEditing(false);
         setIsModalOpen(true);
     };
 
     const handleOpenEdit = (emp) => {
-        setCurrentEmp({ ...emp, password: '', confirmPassword: '' });
+        setCurrentEmp({ ...emp, password: '', confirmPassword: '', departmentId: emp.departmentId || emp.department || '' });
         setEmpFormError('');
         setIsEditing(true);
         setIsModalOpen(true);
@@ -84,7 +89,7 @@ export default function Employees() {
         if (window.confirm("Voulez-vous vraiment supprimer cet employé et ses données ?")) {
             try {
                 await FirebaseService.deleteData('users', id);
-                fetchEmployees();
+                fetchData();
             } catch (error) {
                 console.error("Erreur de suppression:", error);
             }
@@ -179,22 +184,22 @@ export default function Employees() {
                 const { confirmPassword, password, ...formData } = currentEmp;
                 // 1. Create user in Firebase Auth
                 const newUser = await createUser(
-                    formData.email, 
-                    password, 
-                    formData.name.split(' ')[0], 
+                    formData.email,
+                    password,
+                    formData.name.split(' ')[0],
                     formData.name.split(' ').slice(1).join(' ')
                 );
-                
+
                 // Sauvegarde complète incluant la photo et l'empreinte faciale
                 await FirebaseService.updateData('users', newUser.uid, {
-                    department: formData.department || '',
+                    departmentId: formData.departmentId || '',
                     role: formData.role || 'employee',
                     name: formData.name,
                     photo: formData.photo || null,
                     descriptor: formData.descriptor || null
                 });
             }
-            fetchEmployees();
+            fetchData();
             setIsModalOpen(false);
             stopCamera();
         } catch (error) {
@@ -265,7 +270,7 @@ export default function Employees() {
                                             <div className="font-medium">{emp.name || 'N/A'}</div>
                                             <div className="text-sm text-muted">{emp.email}</div>
                                         </td>
-                                        <td>{emp.department || '-'}</td>
+                                        <td>{departments.find(d => d.id === (emp.departmentId || emp.department))?.name || '-'}</td>
                                         <td>
                                             <span className={`badge ${emp.role === 'admin' ? 'badge-admin' : 'badge-emp'}`}>
                                                 {emp.role}
@@ -376,6 +381,21 @@ export default function Employees() {
                                         <Camera size={16} /> {currentEmp.descriptor ? 'Mettre à jour la photo' : 'Prendre la photo'}
                                     </button>
                                 )}
+                            </div>
+
+                            <div className="input-group mb-0 mt-2">
+                                <label>Département</label>
+                                <select
+                                    className="input-field"
+                                    style={{ backgroundColor: 'rgb(20,20,30)' }}
+                                    value={currentEmp.departmentId}
+                                    onChange={e => setCurrentEmp({ ...currentEmp, departmentId: e.target.value })}
+                                >
+                                    <option value="">— Aucun —</option>
+                                    {departments.map(dept => (
+                                        <option key={dept.id} value={dept.id}>{dept.name}</option>
+                                    ))}
+                                </select>
                             </div>
 
                             <div className="input-group mb-0 mt-2">

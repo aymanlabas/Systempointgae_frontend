@@ -1,0 +1,210 @@
+.sidebar-nav {
+    width: 260px;
+    min-height: 100vh;
+    background: var(--bg-dark-secondary);
+    border-right: var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: sticky;
+    top: 0;
+    flex-shrink: 0;
+    z-index: 100;
+}
+
+.sidebar-nav.collapsed {
+    width: 72px;
+}
+
+/* Header */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1rem;
+    border-bottom: var(--glass-border);
+    min-height: 70px;
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    overflow: hidden;
+}
+
+.logo-icon {
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.logo-text {
+    font-size: 1.1rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.collapse-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.collapse-btn:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* User Info */
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-bottom: var(--glass-border);
+    overflow: hidden;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.user-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.user-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text-main);
+}
+
+.role-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-full);
+    width: fit-content;
+}
+
+.badge-admin {
+    background: rgba(79, 70, 229, 0.15);
+    color: var(--primary-light);
+}
+
+.badge-emp {
+    background: rgba(6, 182, 212, 0.15);
+    color: var(--accent);
+}
+
+/* Navigation */
+.sidebar-links {
+    flex: 1;
+    padding: 0.75rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.nav-section-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding: 0.5rem 0.5rem 0.25rem;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    width: 100%;
+    font-family: inherit;
+}
+
+.sidebar-link:hover {
+    background: var(--bg-card);
+    color: var(--text-main);
+}
+
+.sidebar-link.active {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(6, 182, 212, 0.1));
+    color: var(--primary-light);
+    border-left: 3px solid var(--primary);
+}
+
+.link-icon {
+    flex-shrink: 0;
+}
+
+/* Footer */
+.sidebar-footer {
+    padding: 0.75rem;
+    border-top: var(--glass-border);
+}
+
+.logout-btn {
+    color: var(--danger) !important;
+}
+
+.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: var(--danger) !important;
+}
+
+/* Collapsed state tooltip */
+.sidebar-nav.collapsed .sidebar-link {
+    justify-content: center;
+    padding: 0.625rem;
+}
+
+.sidebar-nav.collapsed .sidebar-user {
+    justify-content: center;
+}
+
+.sidebar-nav.collapsed .sidebar-links {
+    align-items: center;
+}
