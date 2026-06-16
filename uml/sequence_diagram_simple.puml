@@ -1,0 +1,40 @@
+@startuml Diagramme_Sequence_Simple_Pointage
+!theme cerulean-outline
+
+title Diagramme de Séquence Simplifié — Pointage Facial
+
+actor "Employé" as Emp
+participant "Application Web" as Web
+participant "Service de\nReconnaissance Faciale" as IA
+participant "Base de Données\n(Firebase)" as DB
+
+autonumber
+
+== Initialisation ==
+Emp -> Web : Accéder à la page de pointage
+Web -> IA : Charger les modèles et les empreintes
+IA --> Web : Prêt
+
+== Processus de Pointage ==
+loop Scan en continu
+    Web -> IA : Analyser flux vidéo
+    IA -> IA : Comparer avec la base
+    
+    alt Visage reconnu
+        IA --> Web : Identité confirmée (ID Employé)
+        
+        Web -> DB : Enregistrer le pointage (Heure, Lieu, Type)
+        activate DB
+        DB --> Web : Succès de l'enregistrement
+        deactivate DB
+        
+        Web --> Emp : Afficher "Pointage validé ✅"
+        Web -> Web : Notification (Telegram/Audio)
+        
+    else Visage non reconnu
+        IA --> Web : Inconnu
+        Web --> Emp : Afficher "Accès refusé ❌"
+    end
+end
+
+@enduml

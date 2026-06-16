@@ -1,0 +1,45 @@
+@startuml Diagramme_Activite_Admin_Gestion_RH
+!theme cerulean-outline
+
+title Diagramme d'Activité — Gestion des Ressources Humaines (Admin)
+
+|Administrateur|
+start
+
+:Se connecter au Dashboard Admin;
+
+if (Quelle action ?) then (Gestion Employés)
+    :Sélectionner "Gestion des Employés";
+    split
+        :Ajouter un nouvel employé;
+        :Uploader la photo/empreinte faciale;
+    split again
+        :Modifier les informations d'un employé;
+        :Changer département/équipe;
+    split again
+        :Désactiver/Supprimer un compte;
+    end split
+    :Enregistrer les modifications;
+
+elseif (Suivi des Présences) then (Oui)
+    :Ouvrir "Statistiques du Jour";
+    :Visualiser le graphique Présents/Absents;
+    :Consulter la liste des retardataires;
+    if (Générer Rapport ?) then (Oui)
+        :Sélectionner format (PDF/Excel);
+        :Extraire les données de pointage;
+        :Télécharger le rapport;
+    else (Non)
+    endif
+
+elseif (Planning & Équipes) then (Oui)
+    :Gérer les horaires de travail;
+    :Affecter des employés aux équipes;
+    :Définir les seuils de retard;
+else (Annuler)
+endif
+
+:Déconnexion;
+stop
+
+@enduml

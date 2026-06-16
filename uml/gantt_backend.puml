@@ -1,0 +1,179 @@
+@startgantt Diagramme_Gantt_Backend
+!theme cerulean-outline
+
+title Diagramme de Gantt — Backend : Système de Pointage Hybride\nMars → Juin 2026
+
+projectscale weekly
+saturday are closed
+sunday are closed
+
+Project starts 2026-03-02
+
+' ===================================================
+'  PHASE 1 — ANALYSE & CONCEPTION BACKEND
+' ===================================================
+
+[Phase 1 : Conception Backend] as [PH1] lasts 2 weeks
+[PH1] is colored in SteelBlue/LightSteelBlue
+
+[Analyse des besoins API] lasts 3 days
+[Analyse des besoins API] is colored in SteelBlue
+
+[Définition de l'architecture\nExpress + Firebase] lasts 4 days
+[Définition de l'architecture\nExpress + Firebase] starts at [Analyse des besoins API]'s end
+[Définition de l'architecture\nExpress + Firebase] is colored in SteelBlue
+
+[Modélisation des endpoints\n(Attendance / HR / Projects)] lasts 3 days
+[Modélisation des endpoints\n(Attendance / HR / Projects)] starts at [Définition de l'architecture\nExpress + Firebase]'s end
+[Modélisation des endpoints\n(Attendance / HR / Projects)] is colored in SteelBlue
+
+' ===================================================
+'  PHASE 2 — MISE EN PLACE DE L'ENVIRONNEMENT
+' ===================================================
+
+[Phase 2 : Environnement & Infrastructure] as [PH2] lasts 2 weeks
+[PH2] starts at [PH1]'s end
+[PH2] is colored in DarkSlateGray/LightGray
+
+[Initialisation projet Node.js\n(Express, dotenv, helmet, cors)] lasts 3 days
+[Initialisation projet Node.js\n(Express, dotenv, helmet, cors)] starts at [PH1]'s end
+[Initialisation projet Node.js\n(Express, dotenv, helmet, cors)] is colored in SlateGray
+
+[Configuration Firebase Admin SDK\n(Auth / Firestore / Storage)] lasts 4 days
+[Configuration Firebase Admin SDK\n(Auth / Firestore / Storage)] starts at [Initialisation projet Node.js\n(Express, dotenv, helmet, cors)]'s end
+[Configuration Firebase Admin SDK\n(Auth / Firestore / Storage)] is colored in SlateGray
+
+[Configuration des variables\nd'environnement (.env)] lasts 3 days
+[Configuration des variables\nd'environnement (.env)] starts at [Configuration Firebase Admin SDK\n(Auth / Firestore / Storage)]'s end
+[Configuration des variables\nd'environnement (.env)] is colored in SlateGray
+
+' ===================================================
+'  PHASE 3 — MIDDLEWARE & SÉCURITÉ
+' ===================================================
+
+[Phase 3 : Middleware & Sécurité] as [PH3] lasts 2 weeks
+[PH3] starts at [PH2]'s end
+[PH3] is colored in SeaGreen/LightGreen
+
+[Middleware d'authentification\n(Firebase Token Verify)] lasts 5 days
+[Middleware d'authentification\n(Firebase Token Verify)] starts at [PH2]'s end
+[Middleware d'authentification\n(Firebase Token Verify)] is colored in SeaGreen
+
+[Gestion des rôles\n(Admin / Employé)] lasts 3 days
+[Gestion des rôles\n(Admin / Employé)] starts at [Middleware d'authentification\n(Firebase Token Verify)]'s end
+[Gestion des rôles\n(Admin / Employé)] is colored in SeaGreen
+
+[Logging & Gestion des erreurs\n(Morgan + Error Handler)] lasts 2 days
+[Logging & Gestion des erreurs\n(Morgan + Error Handler)] starts at [Gestion des rôles\n(Admin / Employé)]'s end
+[Logging & Gestion des erreurs\n(Morgan + Error Handler)] is colored in SeaGreen
+
+' ===================================================
+'  PHASE 4 — DÉVELOPPEMENT DES ROUTES API
+' ===================================================
+
+[Phase 4 : Développement des Routes API] as [PH4] lasts 4 weeks
+[PH4] starts at [PH3]'s end
+[PH4] is colored in Chocolate/Wheat
+
+-- Route : Pointage (Attendance) --
+
+[POST /api/attendance/pointage\n(Facial / QR)] lasts 5 days
+[POST /api/attendance/pointage\n(Facial / QR)] starts at [PH3]'s end
+[POST /api/attendance/pointage\n(Facial / QR)] is colored in Chocolate
+
+[GET /api/attendance/history\n(Historique par employé)] lasts 3 days
+[GET /api/attendance/history\n(Historique par employé)] starts at [POST /api/attendance/pointage\n(Facial / QR)]'s end
+[GET /api/attendance/history\n(Historique par employé)] is colored in Chocolate
+
+[GET /api/attendance/absences\n(Détection automatique)] lasts 2 days
+[GET /api/attendance/absences\n(Détection automatique)] starts at [GET /api/attendance/history\n(Historique par employé)]'s end
+[GET /api/attendance/absences\n(Détection automatique)] is colored in Chocolate
+
+-- Route : RH (HR) --
+
+[GET/POST /api/hr/employees\n(CRUD Employés)] lasts 5 days
+[GET/POST /api/hr/employees\n(CRUD Employés)] starts at [GET /api/attendance/absences\n(Détection automatique)]'s end
+[GET/POST /api/hr/employees\n(CRUD Employés)] is colored in SaddleBrown
+
+[GET/POST /api/hr/departments\n(Départements & Équipes)] lasts 3 days
+[GET/POST /api/hr/departments\n(Départements & Équipes)] starts at [GET/POST /api/hr/employees\n(CRUD Employés)]'s end
+[GET/POST /api/hr/departments\n(Départements & Équipes)] is colored in SaddleBrown
+
+[GET/POST /api/hr/leaves\n(Demandes de congé)] lasts 2 days
+[GET/POST /api/hr/leaves\n(Demandes de congé)] starts at [GET/POST /api/hr/departments\n(Départements & Équipes)]'s end
+[GET/POST /api/hr/leaves\n(Demandes de congé)] is colored in SaddleBrown
+
+-- Route : Projets --
+
+[GET/POST /api/projects\n(Gestion des projets)] lasts 5 days
+[GET/POST /api/projects\n(Gestion des projets)] starts at [GET/POST /api/hr/leaves\n(Demandes de congé)]'s end
+[GET/POST /api/projects\n(Gestion des projets)] is colored in DarkOrange
+
+' ===================================================
+'  PHASE 5 — INTÉGRATION BIOMÉTRIE & QR CODE
+' ===================================================
+
+[Phase 5 : Intégration Biométrie & QR] as [PH5] lasts 2 weeks
+[PH5] starts at [PH4]'s end
+[PH5] is colored in Purple/Lavender
+
+[Intégration Face-API.js\n(Reconnaissance faciale)] lasts 5 days
+[Intégration Face-API.js\n(Reconnaissance faciale)] starts at [PH4]'s end
+[Intégration Face-API.js\n(Reconnaissance faciale)] is colored in Purple
+
+[Génération & Validation QR Code\n(Côté serveur)] lasts 5 days
+[Génération & Validation QR Code\n(Côté serveur)] starts at [Intégration Face-API.js\n(Reconnaissance faciale)]'s end
+[Génération & Validation QR Code\n(Côté serveur)] is colored in Purple
+
+' ===================================================
+'  PHASE 6 — REPORTING & DASHBOARD API
+' ===================================================
+
+[Phase 6 : Reporting & Dashboard API] as [PH6] lasts 2 weeks
+[PH6] starts at [PH5]'s end
+[PH6] is colored in DarkGoldenRod/LightYellow
+
+[Endpoint statistiques\n(Taux présence / absences)] lasts 5 days
+[Endpoint statistiques\n(Taux présence / absences)] starts at [PH5]'s end
+[Endpoint statistiques\n(Taux présence / absences)] is colored in DarkGoldenRod
+
+[Export rapports\n(PDF / CSV)] lasts 5 days
+[Export rapports\n(PDF / CSV)] starts at [Endpoint statistiques\n(Taux présence / absences)]'s end
+[Export rapports\n(PDF / CSV)] is colored in DarkGoldenRod
+
+' ===================================================
+'  PHASE 7 — TESTS & DÉPLOIEMENT BACKEND
+' ===================================================
+
+[Phase 7 : Tests & Déploiement] as [PH7] lasts 2 weeks
+[PH7] starts at [PH6]'s end
+[PH7] is colored in Crimson/MistyRose
+
+[Tests unitaires des routes API\n(Jest / Supertest)] lasts 5 days
+[Tests unitaires des routes API\n(Jest / Supertest)] starts at [PH6]'s end
+[Tests unitaires des routes API\n(Jest / Supertest)] is colored in Crimson
+
+[Déploiement Backend\n(Firebase Functions / Node server)] lasts 5 days
+[Déploiement Backend\n(Firebase Functions / Node server)] starts at [Tests unitaires des routes API\n(Jest / Supertest)]'s end
+[Déploiement Backend\n(Firebase Functions / Node server)] is colored in Crimson
+
+' ===================================================
+'  JALONS (MILESTONES)
+' ===================================================
+
+[Fin Conception & Environnement] happens at [Configuration des variables\nd'environnement (.env)]'s end
+[Fin Conception & Environnement] is colored in Navy
+
+[API Middleware opérationnel] happens at [Logging & Gestion des erreurs\n(Morgan + Error Handler)]'s end
+[API Middleware opérationnel] is colored in Navy
+
+[Toutes les Routes API livrées] happens at [GET/POST /api/projects\n(Gestion des projets)]'s end
+[Toutes les Routes API livrées] is colored in DarkGreen
+
+[Prototype Biométrie + QR prêt] happens at [Génération & Validation QR Code\n(Côté serveur)]'s end
+[Prototype Biométrie + QR prêt] is colored in Navy
+
+[Livraison Backend Finale] happens at [Déploiement Backend\n(Firebase Functions / Node server)]'s end
+[Livraison Backend Finale] is colored in DarkRed
+
+@endgantt

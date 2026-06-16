@@ -4,6 +4,7 @@ import FaceRecognitionService from '../services/FaceRecognitionService';
 import FirebaseService from '../services/FirebaseService';
 import TelegramService from '../services/TelegramService';
 import ApiService from '../services/ApiService';
+import NotificationService from '../services/NotificationService';
 import useWelcomeSound from '../hooks/useWelcomeSound';
 import './Punch.css';
 
@@ -217,7 +218,16 @@ export default function Punch() {
             await ApiService.punch(attendanceRecord);
 
             // Notification Telegram Automatique
-            TelegramService.sendNotification(employee.name, employee.department, actionType, time);
+            TelegramService.sendNotification(employee.name, employee.department, actionType, time, location);
+
+            // 🔔 Notification RH avec localisation GPS
+            NotificationService.notifyHRWithLocation(
+                employee.name,
+                actionType,
+                time,
+                location,
+                employee.id
+            );
 
         } catch (error) {
             console.log("Erreur de sauvegarde de la présence Firestore.", error);

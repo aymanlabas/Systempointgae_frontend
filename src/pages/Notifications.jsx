@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, Trash2, CheckCheck, Check, AlertCircle, Info, CheckCircle, XCircle } from 'lucide-react';
+import { Bell, Trash2, CheckCheck, Check, AlertCircle, Info, CheckCircle, XCircle, MapPin } from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
 import { formatDate } from '../utils/dateUtils';
 import './Projects.css';
@@ -14,6 +14,32 @@ const typeConfig = {
 export default function Notifications() {
     const { notifications, loading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
     const [filter, setFilter] = useState('all');
+
+    // Converts markdown-style [text](url) links inside a message string into
+    // real <a> elements so the HR can click the Google Maps link directly.
+    const renderMessage = (text) => {
+        if (!text) return null;
+        const parts = text.split(/\[([^\]]+)\]\(([^)]+)\)/);
+        return parts.map((part, i) => {
+            // Every triplet: text before, link label, url
+            if (i % 3 === 1) {
+                const url = parts[i + 1];
+                return (
+                    <a
+                        key={i}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: 'var(--primary)', textDecoration: 'underline', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                    >
+                        <MapPin size={13} />{part}
+                    </a>
+                );
+            }
+            if (i % 3 === 2) return null; // URL part, already consumed above
+            return <span key={i} style={{ whiteSpace: 'pre-line' }}>{part}</span>;
+        });
+    };
 
     const filtered = notifications.filter(n => {
         if (filter === 'unread') return !n.isRead;
@@ -84,7 +110,7 @@ export default function Notifications() {
                                             <span className="notif-row-title">{notif.title}</span>
                                             <span className={`badge badge-${config.color}`}>{config.label}</span>
                                         </div>
-                                        <p className="notif-row-msg">{notif.message}</p>
+                                        <p className="notif-row-msg">{renderMessage(notif.message)}</p>
                                         <span className="notif-row-time">{formatDate(notif.createdAt)}</span>
                                     </div>
                                     <div className="notif-row-actions">

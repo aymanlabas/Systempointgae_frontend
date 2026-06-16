@@ -1,0 +1,157 @@
+@startuml Diagramme_Classes_Systeme_Pointage
+!theme cerulean-outline
+
+title Diagramme de Classes — Système de Pointage Facial
+
+' ===================================================
+'  CLASSE : Utilisateur
+' ===================================================
+
+class Utilisateur {
+    +identifiant : Chaîne
+    +courriel : Chaîne
+    +prenom : Chaîne
+    +nom : Chaîne
+    +role : Chaîne
+    +departement : Chaîne
+    +descripteurFacial : Tableau
+    +dateCréation : Date
+    --
+    +seConnecter(courriel, motDePasse) : vide
+    +seDeconnecter() : vide
+    +mettreAJourProfil(donnees) : vide
+    +enregistrerEmpreinteFaciale(descripteur) : vide
+}
+
+' ===================================================
+'  CLASSE : EnregistrementPointage
+' ===================================================
+
+class EnregistrementPointage {
+    +identifiant : Chaîne
+    +type : Chaîne
+    +date : Chaîne
+    +heure : Chaîne
+    +horodatage : Chaîne
+    +methode : Chaîne
+    +estEnRetard : Booleen
+    --
+    +creer(idUtil, type, methode) : EnregistrementPointage
+    +obtenirDernierAujourdhui(idUtil) : EnregistrementPointage
+    +obtenirHistorique(idUtil) : Liste
+    +detecterRetard(heureArrivee, debutPlanning) : Booleen
+}
+
+' ===================================================
+'  CLASSE : Localisation
+' ===================================================
+
+class Localisation {
+    +latitude : Nombre
+    +longitude : Nombre
+    +precision : Nombre
+    --
+    +capturerPositionGPS() : Localisation
+}
+
+' ===================================================
+'  CLASSE : Departement
+' ===================================================
+
+class Departement {
+    +identifiant : Chaîne
+    +nom : Chaîne
+    +description : Chaîne
+    --
+    +ajouter(nom, description) : Departement
+    +modifier(donnees) : vide
+    +supprimer() : vide
+    +obtenirEmployes() : Liste
+}
+
+' ===================================================
+'  CLASSE : Equipe
+' ===================================================
+
+class Equipe {
+    +identifiant : Chaîne
+    +nom : Chaîne
+    --
+    +ajouter(nom, idDept) : Equipe
+    +modifier(donnees) : vide
+    +supprimer() : vide
+    +obtenirMembres() : Liste
+}
+
+' ===================================================
+'  CLASSE : Planning
+' ===================================================
+
+class Planning {
+    +identifiant : Chaîne
+    +heureDebut : Chaîne
+    +heureFin : Chaîne
+    +jours : Liste
+    --
+    +definir(idUtil, heureDebut, heureFin) : Planning
+    +modifier(donnees) : vide
+    +obtenirPourUtilisateur(idUtil) : Planning
+}
+
+' ===================================================
+'  CLASSE : DemandeConge
+' ===================================================
+
+class DemandeConge {
+    +identifiant : Chaîne
+    +dateDebut : Chaîne
+    +dateFin : Chaîne
+    +motif : Chaîne
+    +statut : Chaîne
+    --
+    +soumettre(idUtil, dateDebut, dateFin, motif) : DemandeConge
+    +approuver() : vide
+    +refuser() : vide
+    +annuler() : vide
+    +obtenirParUtilisateur(idUtil) : Liste
+}
+
+' ===================================================
+'  CLASSE : Notification
+' ===================================================
+
+class Notification {
+    +identifiant : Chaîne
+    +titre : Chaîne
+    +message : Chaîne
+    +type : Chaîne
+    +estLue : Booleen
+    +dateCréation : Chaîne
+    --
+    +creer(titre, message, type, roleDestination) : Notification
+    +marquerCommeLue() : vide
+    +supprimer() : vide
+    +obtenirPourUtilisateur(idUtil, role) : Liste
+}
+
+' ===================================================
+'  RELATIONS
+' ===================================================
+
+Utilisateur "1" *-- "0..*" EnregistrementPointage : génère >
+
+Utilisateur "0..*" --> "1" Departement : appartient à >
+
+Utilisateur "0..*" --> "0..1" Equipe : membre de >
+
+Utilisateur "1" *-- "0..1" Planning : possède >
+
+Utilisateur "1" *-- "0..*" DemandeConge : soumet >
+
+Utilisateur "1" *-- "0..*" Notification : reçoit >
+
+Equipe "0..*" --> "1" Departement : rattachée à >
+
+EnregistrementPointage "1" *-- "0..1" Localisation : contient >
+
+@enduml

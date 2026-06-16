@@ -1,0 +1,27 @@
+@startuml Diagramme_Activite_Simple
+!theme cerulean-outline
+
+title Diagramme d'Activité (Version Rapport)
+
+start
+
+:Lancement de l'application;
+:Activation de la caméra;
+
+repeat
+    :Scan du visage de l'employé;
+    
+    if (Visage reconnu ?) then (Oui)
+        :Récupération de l'identité;
+        :Vérification de la localisation GPS;
+        :Enregistrement du pointage (Firestore);
+        :Confirmation vocale et visuelle;
+    else (Non)
+        :Afficher "Utilisateur inconnu";
+    endif
+
+repeat while (Continuer ?) is (Oui)
+
+stop
+
+@enduml

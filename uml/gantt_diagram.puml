@@ -1,0 +1,151 @@
+@startgantt Diagramme_Gantt_Systeme_Pointage
+!theme cerulean-outline
+
+title Diagramme de Gantt — Système de Pointage Hybride (Facial & QR)\nMars → Juin 2026
+
+projectscale weekly
+saturday are closed
+sunday are closed
+
+Project starts 2026-03-02
+
+' ===================================================
+'  PHASE 1 — ANALYSE & CONCEPTION
+' ===================================================
+
+[Phase 1 : Analyse & Conception] as [PH1] lasts 3 weeks
+[PH1] is colored in SteelBlue/LightSteelBlue
+
+[Recueil des besoins] lasts 5 days
+[Recueil des besoins] is colored in SteelBlue
+
+[Analyse des cas d'utilisation] lasts 5 days
+[Analyse des cas d'utilisation] starts at [Recueil des besoins]'s end
+[Analyse des cas d'utilisation] is colored in SteelBlue
+
+[Rédaction des diagrammes UML] lasts 5 days
+[Rédaction des diagrammes UML] starts at [Analyse des cas d'utilisation]'s end
+[Rédaction des diagrammes UML] is colored in SteelBlue
+
+' ===================================================
+'  PHASE 2 — MISE EN PLACE DE L'ENVIRONNEMENT
+' ===================================================
+
+[Phase 2 : Environnement & Architecture] as [PH2] lasts 2 weeks
+[PH2] starts at [PH1]'s end
+[PH2] is colored in DarkSlateGray/LightGray
+
+[Configuration Firebase\n(Auth / Firestore / Storage)] lasts 5 days
+[Configuration Firebase\n(Auth / Firestore / Storage)] starts at [PH1]'s end
+[Configuration Firebase\n(Auth / Firestore / Storage)] is colored in SlateGray
+
+[Mise en place Frontend React] lasts 5 days
+[Mise en place Frontend React] starts at [Configuration Firebase\n(Auth / Firestore / Storage)]'s end
+[Mise en place Frontend React] is colored in SlateGray
+
+' ===================================================
+'  PHASE 3 — DÉVELOPPEMENT AUTHENTIFICATION
+' ===================================================
+
+[Phase 3 : Authentification] as [PH3] lasts 2 weeks
+[PH3] starts at [PH2]'s end
+[PH3] is colored in SeaGreen/LightGreen
+
+[Module Connexion / Déconnexion] lasts 5 days
+[Module Connexion / Déconnexion] starts at [PH2]'s end
+[Module Connexion / Déconnexion] is colored in SeaGreen
+
+[Gestion des rôles\n(Employé / Admin)] lasts 5 days
+[Gestion des rôles\n(Employé / Admin)] starts at [Module Connexion / Déconnexion]'s end
+[Gestion des rôles\n(Employé / Admin)] is colored in SeaGreen
+
+' ===================================================
+'  PHASE 4 — BIOMÉTRIE & QR CODE
+' ===================================================
+
+[Phase 4 : Biométrie & QR Code] as [PH4] lasts 4 weeks
+[PH4] starts at [PH3]'s end
+[PH4] is colored in Chocolate/Wheat
+
+[Intégration Face-API.js] lasts 5 days
+[Intégration Face-API.js] starts at [PH3]'s end
+[Intégration Face-API.js] is colored in Chocolate
+
+[Enregistrement empreinte faciale] lasts 5 days
+[Enregistrement empreinte faciale] starts at [Intégration Face-API.js]'s end
+[Enregistrement empreinte faciale] is colored in Chocolate
+
+[Génération & Scan QR Code] lasts 5 days
+[Génération & Scan QR Code] starts at [Enregistrement empreinte faciale]'s end
+[Génération & Scan QR Code] is colored in Chocolate
+
+[Identification & Pointage (Facial / QR)] lasts 5 days
+[Identification & Pointage (Facial / QR)] starts at [Génération & Scan QR Code]'s end
+[Identification & Pointage (Facial / QR)] is colored in Chocolate
+
+' ===================================================
+'  PHASE 5 — MODULES MÉTIER
+' ===================================================
+
+[Phase 5 : Modules Métier] as [PH5] lasts 3 weeks
+[PH5] starts at [PH4]'s end
+[PH5] is colored in Purple/Lavender
+
+[Gestion des employés\n(CRUD)] lasts 5 days
+[Gestion des employés\n(CRUD)] starts at [PH4]'s end
+[Gestion des employés\n(CRUD)] is colored in Purple
+
+[Gestion des départements\n& équipes] lasts 5 days
+[Gestion des départements\n& équipes] starts at [Gestion des employés\n(CRUD)]'s end
+[Gestion des départements\n& équipes] is colored in Purple
+
+[Plannings & Demandes de congé] lasts 5 days
+[Plannings & Demandes de congé] starts at [Gestion des départements\n& équipes]'s end
+[Plannings & Demandes de congé] is colored in Purple
+
+' ===================================================
+'  PHASE 6 — TABLEAU DE BORD & REPORTING
+' ===================================================
+
+[Phase 6 : Dashboard & Reporting] as [PH6] lasts 2 weeks
+[PH6] starts at [PH5]'s end
+[PH6] is colored in DarkGoldenRod/LightYellow
+
+[Tableau de bord Administrateur] lasts 5 days
+[Tableau de bord Administrateur] starts at [PH5]'s end
+[Tableau de bord Administrateur] is colored in DarkGoldenRod
+
+[Rapports de présence\n& Détection absences] lasts 5 days
+[Rapports de présence\n& Détection absences] starts at [Tableau de bord Administrateur]'s end
+[Rapports de présence\n& Détection absences] is colored in DarkGoldenRod
+
+' ===================================================
+'  PHASE 7 — TESTS & DÉPLOIEMENT
+' ===================================================
+
+[Phase 7 : Tests & Déploiement] as [PH7] lasts 2 weeks
+[PH7] starts at [PH6]'s end
+[PH7] is colored in Crimson/MistyRose
+
+[Tests unitaires & intégration] lasts 5 days
+[Tests unitaires & intégration] starts at [PH6]'s end
+[Tests unitaires & intégration] is colored in Crimson
+
+[Correction des bugs\n& Déploiement final] lasts 5 days
+[Correction des bugs\n& Déploiement final] starts at [Tests unitaires & intégration]'s end
+[Correction des bugs\n& Déploiement final] is colored in Crimson
+
+' ===================================================
+'  JALONS (MILESTONES)
+' ===================================================
+
+[Fin Conception UML] happens at [Rédaction des diagrammes UML]'s end
+[Fin Conception UML] is colored in Navy
+
+[Prototype Pointage Hybride (Facial/QR)] happens at [Identification & Pointage (Facial / QR)]'s end
+[Prototype Pointage Hybride (Facial/QR)] is colored in Navy
+
+[Livraison Finale] happens at [Correction des bugs\n& Déploiement final]'s end
+[Livraison Finale] is colored in DarkRed
+
+@endgantt

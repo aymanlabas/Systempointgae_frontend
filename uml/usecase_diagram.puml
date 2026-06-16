@@ -1,0 +1,124 @@
+@startuml Diagramme_CasUtilisation_Systeme_Pointage
+!theme cerulean-outline
+
+title Diagramme de Cas d'Utilisation — Système de Pointage Facial
+
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+' ===================================================
+'  ACTEURS (Utilisateurs du système uniquement)
+' ===================================================
+
+actor "Employé" as Employe
+actor "Administrateur" as Admin
+
+Admin --|> Employe
+
+' ===================================================
+'  CAS D'UTILISATION
+' ===================================================
+
+rectangle "Système de Pointage Facial" {
+
+    ' ── Authentification ──────────────────────────
+    package "Authentification" {
+        usecase "Se connecter" as UC1
+        usecase "Se déconnecter" as UC2
+        usecase "Créer un compte employé" as UC3
+    }
+
+    ' ── Pointage ──────────────────────────────────
+    package "Pointage Facial" {
+        usecase "Enregistrer un pointage\n(entrée / sortie)" as UC4
+        usecase "Identifier l'employé\npar reconnaissance faciale" as UC5
+        usecase "Détecter le retard\nautomatiquement" as UC6
+        usecase "Enregistrer la géolocalisation" as UC7
+    }
+
+    ' ── Enregistrement Facial ──────────────────────
+    package "Enregistrement Facial" {
+        usecase "Enregistrer son\nempreinte faciale" as UC8
+        usecase "Mettre à jour\nl'empreinte faciale" as UC9
+    }
+
+    ' ── Tableau de Bord ────────────────────────────
+    package "Tableau de Bord Administrateur" {
+        usecase "Consulter les statistiques\ndu jour" as UC10
+        usecase "Visualiser présents /\nabsents / retardataires" as UC11
+        usecase "Détecter les absences\nautomatiquement" as UC12
+    }
+
+    ' ── Gestion Employés ───────────────────────────
+    package "Gestion des Employés" {
+        usecase "Lister les employés" as UC13
+        usecase "Ajouter un employé" as UC14
+        usecase "Modifier un employé" as UC15
+        usecase "Supprimer un employé" as UC16
+    }
+
+    ' ── Modules RH ─────────────────────────────────
+    package "Modules Ressources Humaines" {
+        usecase "Gérer les départements" as UC17
+        usecase "Gérer les équipes" as UC18
+        usecase "Gérer les plannings" as UC19
+        usecase "Soumettre une demande\nde congé" as UC20
+        usecase "Approuver / Refuser\nune demande de congé" as UC21
+        usecase "Générer des rapports\nde présence" as UC22
+    }
+
+    ' ── Profil & Notifications ──────────────────────
+    package "Profil et Notifications" {
+        usecase "Consulter son profil" as UC23
+        usecase "Consulter ses notifications" as UC24
+        usecase "Marquer une notification\ncomme lue" as UC25
+    }
+}
+
+' ===================================================
+'  ASSOCIATIONS — EMPLOYÉ
+' ===================================================
+
+Employe --> UC1
+Employe --> UC2
+Employe --> UC4
+Employe --> UC8
+Employe --> UC9
+Employe --> UC20
+Employe --> UC23
+Employe --> UC24
+Employe --> UC25
+
+' ===================================================
+'  ASSOCIATIONS — ADMINISTRATEUR UNIQUEMENT
+' ===================================================
+
+Admin --> UC3
+Admin --> UC10
+Admin --> UC11
+Admin --> UC12
+Admin --> UC13
+Admin --> UC14
+Admin --> UC15
+Admin --> UC16
+Admin --> UC17
+Admin --> UC18
+Admin --> UC19
+Admin --> UC21
+Admin --> UC22
+
+' ===================================================
+'  RELATIONS INCLUDE / EXTEND
+' ===================================================
+
+UC4 ..> UC5 : <<inclure>>
+UC4 ..> UC6 : <<inclure>>
+UC4 ..> UC7 : <<étendre>>
+
+UC10 ..> UC11 : <<inclure>>
+UC12 ..> UC10 : <<étendre>>
+
+UC8 ..> UC4 : <<étendre>>
+
+@enduml

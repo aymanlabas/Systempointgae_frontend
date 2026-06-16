@@ -1,0 +1,39 @@
+@startuml Diagramme_CasUtilisation_Simple
+!theme cerulean-outline
+
+title Diagramme de Cas d'Utilisation (Version Rapport)
+
+actor "Employé" as Emp
+actor "Administrateur" as Admin
+
+Admin -up-|> Emp
+
+rectangle "Système de Pointage Facial" {
+    
+    package "Authentification" {
+        usecase "S'authentifier" as UC1
+    }
+    
+    package "Pointage & Profil" {
+        usecase "Pointer par reconnaissance faciale" as UC2
+        usecase "Enregistrer son empreinte faciale" as UC3
+        usecase "Consulter son historique" as UC4
+    }
+    
+    package "Gestion (Admin)" {
+        usecase "Gérer les employés et plannings" as UC5
+        usecase "Consulter les rapports de présence" as UC6
+        usecase "Gérer les demandes de congés" as UC7
+    }
+}
+
+Emp --> UC1
+Emp --> UC2
+Emp --> UC3
+Emp --> UC4
+
+Admin --> UC5
+Admin --> UC6
+Admin --> UC7
+
+@enduml

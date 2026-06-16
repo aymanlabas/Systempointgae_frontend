@@ -3,6 +3,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { QrCode, CheckCircle, XCircle, RefreshCw, Info, Camera } from 'lucide-react';
 import FirebaseService from '../services/FirebaseService';
 import TelegramService from '../services/TelegramService';
+import NotificationService from '../services/NotificationService';
 import './Scanner.css';
 
 export default function Scanner() {
@@ -18,18 +19,18 @@ export default function Scanner() {
 
         const startCamera = async () => {
             try {
-                const config = { 
-                    fps: 15, 
+                const config = {
+                    fps: 15,
                     qrbox: { width: 250, height: 250 }
                 };
 
                 // On tente d'utiliser la caméra arrière en priorité
                 await html5QrCode.current.start(
-                    { facingMode: "environment" }, 
-                    config, 
+                    { facingMode: "environment" },
+                    config,
                     onScanSuccess
                 );
-                
+
                 setIsCameraReady(true);
                 setMessage('Prêt à scanner votre QR Code.');
             } catch (err) {
@@ -37,8 +38,8 @@ export default function Scanner() {
                 // Fallback sur n'importe quelle caméra si la caméra arrière échoue
                 try {
                     await html5QrCode.current.start(
-                        { facingMode: "user" }, 
-                        config, 
+                        { facingMode: "user" },
+                        config,
                         onScanSuccess
                     );
                     setIsCameraReady(true);
@@ -61,13 +62,13 @@ export default function Scanner() {
 
     const onScanSuccess = async (decodedText) => {
         if (isProcessing.current) return;
-        
+
         isProcessing.current = true;
         console.log("QR Code détecté:", decodedText);
-        
+
         // Signal visuel de détection (optionnel : faire vibrer le téléphone si possible)
         if (navigator.vibrate) navigator.vibrate(100);
-        
+
         await handleCheckIn(decodedText);
     };
 
@@ -111,6 +112,21 @@ export default function Scanner() {
                 actionType = 'check-out';
             }
 
+            // --- GÉOLOCALISATION ---
+            let location = null;
+            try {
+                const position = await new Promise((resolve, reject) =>
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
+                );
+                location = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                    accuracy: position.coords.accuracy
+                };
+            } catch (geoErr) {
+                console.warn('Géolocalisation inaccessible:', geoErr);
+            }
+
             const attendanceRecord = {
                 userId: employee.id,
                 userName: employee.name || `${employee.firstName} ${employee.lastName}`,
@@ -118,11 +134,21 @@ export default function Scanner() {
                 time: time,
                 timestamp: new Date().toISOString(),
                 type: actionType,
-                method: 'QR_CODE'
+                method: 'QR_CODE',
+                location: location,
             };
 
             await FirebaseService.saveData('attendance', attendanceRecord);
-            await TelegramService.sendNotification(attendanceRecord.userName, employee.department, actionType, time);
+            await TelegramService.sendNotification(attendanceRecord.userName, employee.department, actionType, time, location);
+
+            // 🔔 Notification RH avec localisation GPS
+            NotificationService.notifyHRWithLocation(
+                attendanceRecord.userName,
+                actionType,
+                time,
+                location,
+                employee.id
+            );
 
             setStatus('success');
             setMessage(actionType === 'check-in' ? `Entrée : Bonjour ${employee.firstName} !` : `Sortie : Au revoir ${employee.firstName} !`);
@@ -165,7 +191,7 @@ export default function Scanner() {
                             </div>
                         )}
                     </div>
-                    
+
                     <div className={`scanner-status ${status}`}>
                         {status === 'idle' && <QrCode size={24} />}
                         {status === 'scanning' && <RefreshCw size={24} className="spinner" />}
@@ -190,7 +216,7 @@ export default function Scanner() {
                         </div>
                         <p className="text-xs text-muted mt-4">Zone de lecture optimale</p>
                     </div>
-                    
+
                     <button onClick={() => window.location.reload()} className="btn btn-secondary w-full mt-4">
                         <Camera size={16} /> Relancer la caméra
                     </button>

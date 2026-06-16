@@ -1,0 +1,118 @@
+@startuml Diagramme_Composants_Systeme_Pointage
+!theme cerulean-outline
+
+title Diagramme de Composants — Système de Pointage Facial
+
+skinparam componentStyle rectangle
+skinparam defaultFontName Arial
+skinparam ArrowColor #336699
+skinparam component {
+    BorderColor #336699
+}
+
+' ===================================================
+'  COUCHE PRÉSENTATION (Frontend)
+' ===================================================
+
+package "Application Web (Frontend)" #D6EAF8 {
+
+    component [Module Authentification]           as CompAuth
+    component [Module Pointage Facial]            as CompPointage
+    component [Module Profil & Empreinte]         as CompProfil
+    component [Tableau de Bord Admin]             as CompDashboard
+    component [Module RH\n(Congés / Plannings)]   as CompRH
+    component [Module Notifications]              as CompNotif
+}
+
+' ===================================================
+'  COUCHE SERVICES MÉTIER (Backend)
+' ===================================================
+
+package "Services Métier (Backend)" #D5F5E3 {
+
+    component [Service Authentification\n& Autorisation]  as SrvAuth
+    component [Service Reconnaissance\nFaciale]           as SrvFacial
+    component [Service Pointage]                          as SrvPointage
+    component [Service Géolocalisation]                   as SrvGeo
+    component [Service RH\n(Congés / Plannings / Équipes)] as SrvRH
+    component [Service Notifications]                     as SrvNotif
+    component [Service Reporting\n& Statistiques]         as SrvReport
+    component [Service Gestion Employés]                  as SrvEmploye
+    component [Détection Automatique\ndes Absences]       as SrvAbsence
+}
+
+' ===================================================
+'  COUCHE DONNÉES
+' ===================================================
+
+package "Couche Données (Firebase)" #FAD7A0 {
+
+    database "Firestore\n(Base NoSQL)"            as Firestore
+    database "Firebase Storage\n(Empreintes)"     as FBStorage
+    database "Firebase Auth\n(Identités)"         as FBAuth
+}
+
+' ===================================================
+'  SERVICES EXTERNES
+' ===================================================
+
+package "Services Externes" #EAEDED {
+
+    component [Face-API.js\n(IA Faciale)]            as ExtFaceAPI
+    component [Caméra Webcam\n(MediaDevices API)]    as ExtCamera
+    component [API GPS Navigateur]                   as ExtGPS
+}
+
+' ===================================================
+'  INTERFACES EXPOSÉES
+' ===================================================
+
+interface "IAuthentification" as IAuth
+interface "IPointage"         as IPoint
+interface "IRecoFaciale"      as IFacial
+interface "IRapports"         as IReport
+
+SrvAuth     - IAuth
+SrvPointage - IPoint
+SrvFacial   - IFacial
+SrvReport   - IReport
+
+' ===================================================
+'  CONNEXIONS : Frontend → Services Métier
+' ===================================================
+
+CompAuth      --> SrvAuth
+CompPointage  --> SrvPointage
+CompPointage  --> SrvFacial
+CompProfil    --> SrvFacial
+CompDashboard --> SrvReport
+CompDashboard --> SrvAbsence
+CompDashboard --> SrvEmploye
+CompRH        --> SrvRH
+CompNotif     --> SrvNotif
+
+' ===================================================
+'  CONNEXIONS : Services Métier → Couche Données
+' ===================================================
+
+SrvAuth     --> FBAuth
+SrvAuth     --> Firestore
+SrvPointage --> Firestore
+SrvFacial   --> FBStorage
+SrvFacial   --> Firestore
+SrvRH       --> Firestore
+SrvNotif    --> Firestore
+SrvReport   --> Firestore
+SrvEmploye  --> Firestore
+SrvAbsence  --> Firestore
+
+' ===================================================
+'  CONNEXIONS : Services Métier → Services Externes
+' ===================================================
+
+SrvFacial   --> ExtFaceAPI
+SrvFacial   --> ExtCamera
+SrvPointage --> SrvGeo
+SrvGeo      --> ExtGPS
+
+@enduml

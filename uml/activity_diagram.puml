@@ -1,0 +1,160 @@
+@startuml Diagramme_Activite_Systeme_Pointage
+!theme cerulean-outline
+
+title Diagramme d'Activité — Système de Pointage Facial
+
+|#LightSteelBlue| Système (Initialisation) |
+|#LightGreen| Employé |
+|#LightYellow| Service Reconnaissance Faciale |
+|#LightPink| Serveur Backend (Express) |
+|#MistyRose| Services Externes |
+
+start
+
+' ============================================================
+'  PHASE 1 : INITIALISATION
+' ============================================================
+
+|Système (Initialisation)|
+:Ouverture de la page Pointage;
+:Chargement des modèles d'intelligence artificielle\n(Détection, Points de repère, Reconnaissance);
+
+if (Modèles chargés avec succès ?) then (Oui)
+    :Récupération des employés\ndepuis la base de données\n(avec descripteurs faciaux);
+    if (Employés avec empreinte faciale trouvés ?) then (Oui)
+        :Création du Comparateur Facial\n(seuil de distance = 0.55);
+        :Activation de la webcam;
+        :Lancement de l'analyse\n(1 scan par seconde);
+    else (Non)
+        :Afficher avertissement\n"Aucune empreinte faciale enregistrée";
+        stop
+    end if
+else (Non)
+    :Afficher erreur système\n"Modèles inaccessibles";
+    stop
+end if
+
+' ============================================================
+'  PHASE 2 : BOUCLE D'ANALYSE
+' ============================================================
+
+|Service Reconnaissance Faciale|
+repeat
+    :Capture d'une image depuis la webcam;
+    :Détection des visages dans l'image;
+
+    if (Nombre de visages détectés ?) then (Aucun visage)
+        |Employé|
+        :Afficher "En attente de détection...";
+
+    else (Plusieurs visages)
+        |Employé|
+        :Afficher "Plusieurs visages détectés !";
+
+    else (Un seul visage)
+        |Service Reconnaissance Faciale|
+        :Extraction du descripteur facial\n(vecteur de 128 dimensions);
+        :Comparaison avec le Comparateur Facial\n(distance euclidienne);
+
+        if (Distance < 0.55 et etiquette ≠ "inconnu") then (Oui — Employé reconnu)
+
+            ' ==================================================
+            '  PHASE 3 : CONTRÔLE ANTI-SPAM ET TYPE DE POINTAGE
+            ' ==================================================
+
+            |Système (Initialisation)|
+            :Récupérer l'historique des pointages\nde l'employé pour aujourd'hui;
+
+            if (Dernier pointage < 60 secondes ?) then (Oui)
+                |Employé|
+                :Afficher "Pointage refusé — Trop récent";
+                :Patienter 4 secondes;
+
+            else (Non — Pointage autorisé)
+                |Système (Initialisation)|
+                :Déterminer le type de pointage\n(Entrée ou Sortie);
+
+                if (Type = Entrée ?) then (Oui)
+                    :Diffuser le message de bienvenue\n"Bonjour [Prénom] !";
+                endif
+
+                :Demander la localisation GPS\n(délai maximum : 5 secondes);
+
+                fork
+                    :Coordonnées GPS disponibles;
+                    :Stocker latitude / longitude / précision;
+                fork again
+                    :Géolocalisation refusée ou expirée;
+                    :Continuer le pointage sans localisation;
+                end fork
+
+                ' ==================================================
+                '  PHASE 4 : ENREGISTREMENT CÔTÉ SERVEUR
+                ' ==================================================
+
+                |Serveur Backend (Express)|
+                :Recevoir la requête POST /api/pointage/pointer;
+                :Vérifier le jeton d'authentification JWT;
+
+                if (Jeton valide ?) then (Oui)
+                    :Calculer l'heure et la date\ndu côté serveur;
+                    :Détecter le retard\n(heure arrivée > début du planning);
+                    :Enregistrer le pointage\ndans la collection 'pointages';
+
+                    |Système (Initialisation)|
+                    :Réponse 201 — Pointage confirmé;
+
+                    ' ==================================================
+                    '  PHASE 5 : NOTIFICATIONS PARALLÈLES
+                    ' ==================================================
+
+                    |Services Externes|
+                    fork
+                        :Envoyer une alerte Telegram\n(message bot → Administrateur);
+                    fork again
+                        :Créer une notification dans l'application\n(collection 'notifications' Firestore);
+                    end fork
+
+                    |Employé|
+                    :Afficher le message de succès\n"✅ Pointage enregistré avec succès !";
+
+                else (Non — Jeton invalide ou expiré)
+                    |Serveur Backend (Express)|
+                    :Réponse 401 — Accès non autorisé;
+                end if
+
+                |Système (Initialisation)|
+                :Patienter 4 secondes;
+                :Réinitialiser l'affichage\n(statut = en_attente, utilisateur = nul);
+            end if
+
+        else (Non — Visage inconnu)
+            |Employé|
+            :Afficher "Visage non reconnu\nAccès refusé";
+        end if
+    end if
+
+repeat while (Système actif ?) is (Oui)
+-> Non (Fermeture de la page);
+
+' ============================================================
+'  PHASE 6 : DÉTECTION AUTOMATIQUE DES ABSENCES (après 10h)
+' ============================================================
+
+|Système (Initialisation)|
+if (Heure actuelle ≥ 10h00 ?) then (Oui)
+    :Récupérer tous les pointages d'entrée du jour;
+    :Comparer avec la liste complète des employés;
+    :Identifier les employés sans pointage;
+
+    if (Des absences détectées ?) then (Oui)
+        |Services Externes|
+        :Créer une notification "Absence détectée"\npour chaque employé absent\n(destinataire : Administrateur);
+    endif
+endif
+
+:Arrêt de la webcam et libération des ressources;
+
+stop
+
+@enduml

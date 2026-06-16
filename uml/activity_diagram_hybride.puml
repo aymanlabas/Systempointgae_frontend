@@ -1,0 +1,53 @@
+@startuml Diagramme_Activite_Hybride
+!theme cerulean-outline
+
+title Diagramme d'Activité — Processus de Pointage Hybride (Facial / QR)
+
+|Employé|
+start
+
+:Ouvrir l'application de pointage;
+
+if (Choisir la méthode ?) then (Reconnaissance Faciale)
+    |IA & Caméra|
+    :Activer la reconnaissance faciale;
+    :Capturer et analyser le flux vidéo;
+    :Comparer avec les descripteurs faciaux;
+    
+    if (Visage identifié ?) then (Oui)
+        :Récupérer ID Employé;
+    else (Non)
+        :Afficher "Erreur Identification";
+        stop
+    endif
+
+else (Scan QR Code)
+    |Scanner QR|
+    :Activer le lecteur de code QR;
+    :Scanner le QR Code (depuis mobile);
+    :Décoder le jeton de sécurité;
+    
+    if (Code valide & ID déchiffré ?) then (Oui)
+        :Récupérer ID Employé;
+    else (Non)
+        :Afficher "QR Code Invalide / Expiré";
+        stop
+    endif
+endif
+
+|Backend / Firestore|
+:Valider le pointage (Serveur);
+:Vérifier la géolocalisation GPS;
+:Enregistrer (Date, Heure, Méthode, Localisation);
+
+fork
+    :Envoyer Notification Telegram;
+fork again
+    :Mettre à jour Dashboard Admin;
+end fork
+
+|Employé|
+:Confirmer le succès (Audio + Visuel);
+stop
+
+@enduml

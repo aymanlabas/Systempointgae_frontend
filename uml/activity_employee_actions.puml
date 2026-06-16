@@ -1,0 +1,45 @@
+@startuml Diagramme_Activite_Employe_Global
+!theme cerulean-outline
+
+title Diagramme d'Activité — Actions de l'Employé
+
+|Employé|
+start
+
+:Se connecter à l'application mobile/web;
+
+if (Quelle opération ?) then (Pointage)
+    :Choisir mode (Facial ou QR);
+    :Effectuer le scan;
+    :Recevoir confirmation de présence;
+
+elseif (Demande de Congé) then (Oui)
+    :Accéder au module "Congés";
+    :Remplir le formulaire (Dates, Motif);
+    :Soumettre la demande;
+    |Backend|
+    :Enregistrer dans Firestore (Statut: En attente);
+    :Notifier l'Administrateur;
+    |Employé|
+    :Afficher "Demande envoyée avec succès";
+
+elseif (Profil & Biométrie) then (Oui)
+    :Accéder à "Mon Profil";
+    if (Action ?) then (Enregistrer Face)
+        :Capturer photo via webcam;
+        :Extraire l'empreinte faciale;
+        :Sauvegarder dans Firebase Storage;
+    else (Générer QR)
+        :Générer QR Code d'identification;
+        :Afficher le code sur l'écran;
+    endif
+
+elseif (Suivi & Historique) then (Oui)
+    :Consulter l'historique des pointages;
+    :Consulter les notifications reçues;
+else (Se déconnecter)
+endif
+
+stop
+
+@enduml

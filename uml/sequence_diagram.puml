@@ -1,0 +1,123 @@
+@startuml Diagramme_Sequence_Pointage_Facial
+!theme cerulean-outline
+
+title Diagramme de Séquence — Processus de Pointage par Reconnaissance Faciale
+
+actor "Employé" as Emp
+participant "Interface\n(Punch.jsx)" as IHM
+participant "Service\nReconnaissance Faciale" as SRF
+participant "Service\nFirebase (Firestore)" as SFB
+participant "Serveur API\n(Express)" as API
+participant "Service\nTelegram" as STG
+participant "Synthèse Vocale\n(Navigateur)" as SV
+
+autonumber
+
+== Phase 1 : Initialisation du Système ==
+
+Emp -> IHM : Ouvre la page /pointage
+activate IHM
+
+IHM -> SRF : chargerModeles()
+activate SRF
+SRF --> IHM : Modèles IA chargés ✓
+deactivate SRF
+
+IHM -> SFB : obtenirDonnees('utilisateurs')
+activate SFB
+SFB --> IHM : Liste des employés\n(avec descripteurs faciaux)
+deactivate SFB
+
+IHM -> SRF : creerComparateurFacial(listeEmployes)
+activate SRF
+SRF --> IHM : Comparateur Facial prêt ✓
+deactivate SRF
+
+IHM -> IHM : demarrerVideo()\n→ Accès à la webcam
+IHM --> Emp : "Prêt — Veuillez vous positionner devant la caméra"
+
+== Phase 2 : Boucle de Scan (1 analyse par seconde) ==
+
+loop Analyse en continu
+
+    IHM -> SRF : detecterVisage(elementVideo)
+    activate SRF
+
+    alt Aucun visage détecté
+        SRF --> IHM : [] (liste vide)
+        deactivate SRF
+        IHM --> Emp : Statut : "En attente de détection..."
+
+    else Plusieurs visages détectés
+        SRF --> IHM : detections.longueur > 1
+        deactivate SRF
+        IHM --> Emp : Statut : "Attention — Plusieurs visages détectés !"
+
+    else Un seul visage détecté
+        SRF --> IHM : detections[0]
+        deactivate SRF
+        IHM --> Emp : Statut : "Recherche dans la base de données..."
+
+        IHM -> SRF : extraireDescripteur(detection)
+        activate SRF
+        SRF --> IHM : descripteurCapture (Tableau32Bits)
+        deactivate SRF
+
+        IHM -> SRF : identifierVisage(comparateur, descripteurCapture)
+        activate SRF
+        SRF --> IHM : resultat { etiquette, distance }
+        deactivate SRF
+
+        alt Visage inconnu (distance > 0.55 ou etiquette = "inconnu")
+            IHM --> Emp : "Visage non reconnu — Accès refusé"
+
+        else Employé identifié avec succès ✓
+            IHM -> SFB : obtenirDonneesParCondition('pointages', idUtilisateur)
+            activate SFB
+            SFB --> IHM : Historique des pointages de l'employé
+            deactivate SFB
+
+            alt Dernier pointage il y a moins de 60 secondes (anti-spam)
+                IHM --> Emp : "Pointage refusé — Trop récent"
+
+            else Pointage autorisé
+
+                IHM -> IHM : Déterminer le type d'action\n(entrée ou sortie)
+
+                opt Type = Entrée
+                    IHM -> SV : jouerBienvenue(prenom)
+                    SV --> Emp : "Bonjour [Prénom], bienvenue !"
+                end
+
+                IHM -> IHM : Demande de géolocalisation GPS\n(délai max. 5 secondes)
+                note right : Optionnel — le pointage\ncontinue même sans GPS
+
+                IHM -> API : POST /api/pointage/pointer\n{ idUtil, nom, type, localisation, methode:'facial' }
+                activate API
+
+                API -> API : Vérification du jeton JWT\n(Middleware Authentification)
+                API -> API : Calcul de l'heure et de la date\n(côté serveur)
+                API -> API : Détection du retard\n(heure > debut_planning)
+                API -> SFB : Enregistrer dans 'pointages'
+                activate SFB
+                SFB --> API : Identifiant du document créé
+                deactivate SFB
+                API --> IHM : 201 Créé { id, enregistrement }
+                deactivate API
+
+                IHM -> STG : envoyerNotification(nom, dept, type, heure)
+                activate STG
+                STG -> STG : POST api.telegram.org/bot.../envoyerMessage
+                STG --> IHM : OK (asynchrone)
+                deactivate STG
+
+                IHM --> Emp : "✅ [Entrée/Sortie] enregistrée avec succès !"
+                note over IHM : Réinitialisation après 4 secondes\npour accueillir le prochain employé
+            end
+        end
+    end
+end
+
+deactivate IHM
+
+@enduml

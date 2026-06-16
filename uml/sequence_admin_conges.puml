@@ -1,0 +1,44 @@
+@startuml Diagramme_Sequence_Admin_Conges
+!theme cerulean-outline
+
+title Diagramme de Séquence — Gestion des Congés (Administrateur)
+
+actor "Administrateur" as Admin
+participant "Interface Admin" as UI
+participant "Service RH" as SRH
+database "Firestore DB" as DB
+participant "Service Notification" as SN
+
+autonumber
+
+Admin -> UI : Accéder à la liste des demandes de congés
+activate UI
+
+UI -> DB : Récupérer demandes "En attente"
+activate DB
+DB --> UI : Liste des demandes
+deactivate DB
+
+UI --> Admin : Afficher les demandes (Employé, Dates, Motif)
+
+Admin -> UI : Approuver ou Refuser une demande
+UI -> SRH : traiterDemande(idDemande, statut)
+activate SRH
+
+SRH -> DB : Mettre à jour le document 'demandes_conge'
+activate DB
+DB --> SRH : Confirmation MAJ
+deactivate DB
+
+SRH -> SN : Envoyer notification à l'employé
+activate SN
+SN --> SRH : Succès
+deactivate SN
+
+SRH --> UI : Demande traitée avec succès
+deactivate SRH
+
+UI --> Admin : Message : "Action enregistrée et employé notifié"
+deactivate UI
+
+@enduml

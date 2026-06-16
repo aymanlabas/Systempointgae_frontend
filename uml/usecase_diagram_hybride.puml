@@ -1,0 +1,42 @@
+@startuml Diagramme_CasUtilisation_Hybride
+!theme cerulean-outline
+
+title Diagramme de Cas d'Utilisation — Système de Pointage (Facial & QR)
+
+actor "Employé" as Emp
+actor "Administrateur" as Admin
+
+Admin -up-|> Emp
+
+rectangle "Système de Pointage Hybride" {
+    
+    package "Authentification" {
+        usecase "Se connecter" as UC1
+    }
+    
+    package "Pointage Biométrique & Digital" {
+        usecase "Pointage par Reconnaissance Faciale" as UC2
+        usecase "Pointage par Scan QR Code" as UC3
+        usecase "Générer son QR Code personnel" as UC4
+        usecase "Enregistrer l'empreinte faciale" as UC5
+    }
+    
+    package "Gestion RH & Suivi" {
+        usecase "Consulter son historique de présence" as UC6
+        usecase "Gérer les employés et plannings" as UC7
+        usecase "Suivre les statistiques en temps réel" as UC8
+        usecase "Générer des rapports (QR vs Facial)" as UC9
+    }
+}
+
+Emp --> UC1
+Emp --> UC2
+Emp --> UC3
+Emp --> UC4
+Emp --> UC6
+
+Admin --> UC7
+Admin --> UC8
+Admin --> UC9
+
+@enduml

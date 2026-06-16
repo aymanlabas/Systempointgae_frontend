@@ -1,0 +1,45 @@
+@startuml Diagramme_Sequence_Hybride
+!theme cerulean-outline
+
+title Diagramme de Séquence — Pointage Multipoint (Facial & QR)
+
+actor "Employé" as Emp
+participant "Interface Application" as UI
+participant "Service Facial (IA)" as IA
+participant "Lecteur QR Code" as QR
+participant "Serveur Backend" as API
+database "Firestore DB" as DB
+
+autonumber
+
+Emp -> UI : Choisir méthode
+activate UI
+
+alt Mode Reconnaissance Faciale
+    UI -> IA : Analyser visage
+    activate IA
+    IA --> UI : ID Confirmé
+    deactivate IA
+else Mode QR Code
+    UI -> QR : Scanner code
+    activate QR
+    QR --> UI : Données QR (Jeton/UID)
+    deactivate QR
+end
+
+UI -> API : Envoyer demande de pointage\n{ID, Méthode, GPS}
+activate API
+
+API -> API : Vérifier validité (Date/Heure)
+API -> DB : Enregistrer document 'pointages'
+activate DB
+DB --> API : OK
+deactivate DB
+
+API --> UI : Succès (201 Created)
+deactivate API
+
+UI --> Emp : Confirmation : "✅ Pointage réussi"
+deactivate UI
+
+@enduml
