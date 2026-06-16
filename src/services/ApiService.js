@@ -1,6 +1,7 @@
 import { auth } from '../firebase';
 
-const API_URL = 'http://localhost:5000/api';
+// On utilise la variable d'environnement (si elle existe en prod), sinon on garde localhost en local
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 /**
  * Service centralisé pour communiquer avec le backend Express
