@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Edit2, Trash2, Search, X, Camera, Check, Eye } from 'lucide-react';
 import FirebaseService from '../services/FirebaseService';
+import ApiService from '../services/ApiService';
+import AuthService from '../services/AuthService';
 import FaceRecognitionService from '../services/FaceRecognitionService';
 import { useAuth } from '../context/AuthContext';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -8,10 +10,10 @@ import { db } from '../firebase';
 import './Employees.css';
 
 export default function Employees() {
-    const { createUser } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [employees, setEmployees] = useState([]);
     const [departments, setDepartments] = useState([]);
+    const [schedules, setSchedules] = useState([]);
     const [loading, setLoading] = useState(true);
 
     // Modal State (Add/Edit)
@@ -33,12 +35,14 @@ export default function Employees() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [empData, deptData] = await Promise.all([
+            const [empData, deptData, scheduleData] = await Promise.all([
                 FirebaseService.getData('users'),
-                FirebaseService.getData('departments')
+                FirebaseService.getData('departments'),
+                FirebaseService.getData('schedules')
             ]);
             setEmployees(empData);
             setDepartments(deptData);
+            setSchedules(scheduleData);
         } catch (error) {
             console.error("Erreur serveur :", error);
         } finally {
@@ -57,14 +61,14 @@ export default function Employees() {
     );
 
     const handleOpenAdd = () => {
-        setCurrentEmp({ name: '', email: '', password: '', confirmPassword: '', role: 'employee', departmentId: '', descriptor: null, photo: null });
+        setCurrentEmp({ name: '', email: '', password: '', confirmPassword: '', role: 'employee', departmentId: '', scheduleId: '', descriptor: null, photo: null });
         setEmpFormError('');
         setIsEditing(false);
         setIsModalOpen(true);
     };
 
     const handleOpenEdit = (emp) => {
-        setCurrentEmp({ ...emp, password: '', confirmPassword: '', departmentId: emp.departmentId || emp.department || '' });
+        setCurrentEmp({ ...emp, password: '', confirmPassword: '', departmentId: emp.departmentId || emp.department || '', scheduleId: emp.scheduleId || '' });
         setEmpFormError('');
         setIsEditing(true);
         setIsModalOpen(true);
@@ -86,12 +90,28 @@ export default function Employees() {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Voulez-vous vraiment supprimer cet employé et ses données ?")) {
+        if (window.confirm("Voulez-vous vraiment supprimer cet employé ?")) {
             try {
-                await FirebaseService.deleteData('users', id);
+                // On tente la suppression complète (Auth + Firestore) via le backend
+                await ApiService.deleteUser(id);
+                alert("Employé supprimé avec succès (Compte + Données).");
                 fetchData();
             } catch (error) {
-                console.error("Erreur de suppression:", error);
+                console.error("Erreur de suppression complète:", error);
+
+                // Si l'erreur est liée à la connexion (compte mock admin), on propose le mode dégradé
+                if (error.message.includes("non connecté") || error.message.includes("401") || error.message.includes("403")) {
+                    if (window.confirm("Note : Vous utilisez un compte admin local. Le compte Firebase Auth ne peut pas être supprimé automatiquement sans authentification réelle. \n\nVoulez-vous supprimer uniquement les données de l'employé de la liste ?")) {
+                        try {
+                            await FirebaseService.deleteData('users', id);
+                            fetchData();
+                        } catch (err) {
+                            alert("Erreur lors de la suppression des données: " + err.message);
+                        }
+                    }
+                } else {
+                    alert("Erreur: " + error.message);
+                }
             }
         }
     };
@@ -181,23 +201,24 @@ export default function Employees() {
                 if (!dataToUpdate.password) delete dataToUpdate.password;
                 await FirebaseService.updateData('users', id, dataToUpdate);
             } else {
-                const { confirmPassword, password, ...formData } = currentEmp;
-                // 1. Create user in Firebase Auth
-                const newUser = await createUser(
-                    formData.email,
-                    password,
-                    formData.name.split(' ')[0],
-                    formData.name.split(' ').slice(1).join(' ')
-                );
+                const { email, password, name, role, departmentId, photo, descriptor } = currentEmp;
 
-                // Sauvegarde complète incluant la photo et l'empreinte faciale
-                await FirebaseService.updateData('users', newUser.uid, {
-                    departmentId: formData.departmentId || '',
-                    role: formData.role || 'employee',
-                    name: formData.name,
-                    photo: formData.photo || null,
-                    descriptor: formData.descriptor || null
+                // On utilise AuthService.register (Client-side) pour que ça marche même avec le compte mock admin
+                const newUser = await AuthService.register(email, password);
+
+                // Sauvegarde des données complémentaires dans Firestore
+                await FirebaseService.setDocument('users', newUser.uid, {
+                    uid: newUser.uid,
+                    email: email,
+                    name: name,
+                    role: role || 'employee',
+                    departmentId: departmentId || '',
+                    scheduleId: scheduleId || '',
+                    photo: photo || null,
+                    descriptor: descriptor || null,
+                    createdAt: new Date().toISOString()
                 });
+                alert("Employé créé avec succès !");
             }
             fetchData();
             setIsModalOpen(false);
@@ -205,10 +226,9 @@ export default function Employees() {
         } catch (error) {
             console.error("Erreur complète:", error);
             if (error.code === 'auth/email-already-in-use') {
-                setEmpFormError('Cet email est déjà utilisé.');
+                setEmpFormError('Cet email est déjà utilisé dans Firebase Auth.');
             } else {
-                // Afficher l'erreur réelle pour le diagnostic
-                setEmpFormError(`Erreur: ${error.message || "Problème de connexion"}`);
+                setEmpFormError(`Erreur: ${error.message}`);
             }
         }
     };
@@ -394,6 +414,21 @@ export default function Employees() {
                                     <option value="">— Aucun —</option>
                                     {departments.map(dept => (
                                         <option key={dept.id} value={dept.id}>{dept.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="input-group mb-0 mt-2">
+                                <label>Horaire de travail</label>
+                                <select
+                                    className="input-field"
+                                    style={{ backgroundColor: 'rgb(20,20,30)' }}
+                                    value={currentEmp.scheduleId}
+                                    onChange={e => setCurrentEmp({ ...currentEmp, scheduleId: e.target.value })}
+                                >
+                                    <option value="">— Standard (09:00) —</option>
+                                    {schedules.map(sch => (
+                                        <option key={sch.id} value={sch.id}>{sch.name} ({sch.startTime}-{sch.endTime})</option>
                                     ))}
                                 </select>
                             </div>

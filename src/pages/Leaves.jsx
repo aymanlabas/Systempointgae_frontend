@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CalendarDays, Plus, Check, X, Clock, Search, Filter, Save } from 'lucide-react';
+import { CalendarDays, Plus, Check, X, Clock, Search, Filter, Save, Trash2 } from 'lucide-react';
 import FirebaseService from '../services/FirebaseService';
 import Modal from '../components/Modal';
 import { useAuth } from '../context/AuthContext';
@@ -66,6 +66,18 @@ export default function Leaves() {
             reviewedAt: new Date().toISOString(),
         });
         await fetchData();
+    };
+
+    const handleDelete = async (leaveId) => {
+        if (window.confirm("Voulez-vous vraiment supprimer cette demande de l'historique ?")) {
+            try {
+                await FirebaseService.deleteData('leaves', leaveId);
+                await fetchData();
+            } catch (error) {
+                console.error("Erreur de suppression:", error);
+                alert("Erreur lors de la suppression");
+            }
+        }
     };
 
     const filtered = leaves.filter(l => {
@@ -169,19 +181,27 @@ export default function Leaves() {
                                         {leave.reason || '—'}
                                     </td>
                                     <td><StatusBadge status={leave.status} /></td>
-                                    {isAdmin && leave.status === 'en_attente' && (
+                                    {isAdmin && (
                                         <td>
-                                            <div style={{ display: 'flex', gap: '0.375rem' }}>
-                                                <button className="btn-icon-sm" style={{ color: 'var(--success)' }} onClick={() => handleReview(leave.id, 'accepte')} title="Accepter">
-                                                    <Check size={15} />
-                                                </button>
-                                                <button className="btn-icon-sm danger" onClick={() => handleReview(leave.id, 'refuse')} title="Refuser">
-                                                    <X size={15} />
+                                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                                {leave.status === 'en_attente' ? (
+                                                    <>
+                                                        <button className="btn-icon-sm" style={{ color: 'var(--success)' }} onClick={() => handleReview(leave.id, 'accepte')} title="Accepter">
+                                                            <Check size={15} />
+                                                        </button>
+                                                        <button className="btn-icon-sm danger" onClick={() => handleReview(leave.id, 'refuse')} title="Refuser">
+                                                            <X size={15} />
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <span className="text-muted" style={{ fontSize: '0.78rem' }}>Traité</span>
+                                                )}
+                                                <button className="btn-icon-sm" style={{ color: 'var(--danger)', marginLeft: '4px' }} onClick={() => handleDelete(leave.id)} title="Supprimer définitivement">
+                                                    <Trash2 size={15} />
                                                 </button>
                                             </div>
                                         </td>
                                     )}
-                                    {isAdmin && leave.status !== 'en_attente' && <td className="text-muted" style={{ fontSize: '0.78rem' }}>Traité</td>}
                                 </tr>
                             ))}
                         </tbody>

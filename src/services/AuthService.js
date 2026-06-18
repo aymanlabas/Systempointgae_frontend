@@ -16,19 +16,20 @@ class AuthService {
         }
     }
 
-   
+
     async register(email, password) {
         try {
-            // Pour éviter la déconnexion de l'admin, on utilise une instance secondaire temporaire
-            const secondaryApp = initializeApp(app.options, "Secondary");
+            // On utilise un nom unique pour l'instance secondaire afin d'éviter l'erreur "App already exists"
+            const appName = `Secondary-${Date.now()}`;
+            const secondaryApp = initializeApp(app.options, appName);
             const secondaryAuth = getAuth(secondaryApp);
-            
+
             const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
-            
-            // On déconnecte l'instance secondaire immédiatement et on la supprime
+
+            // On se déconnecte et on supprime l'instance immédiatement
             await signOut(secondaryAuth);
             await deleteApp(secondaryApp);
-            
+
             return userCredential.user;
         } catch (error) {
             console.error('Registration error:', error);

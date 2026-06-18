@@ -1,7 +1,5 @@
-# Backend
-backend/node_modules
-backend/.env
-backend/config/serviceAccountKey.json
+# Backend (excluded from frontend repo)
+backend/
 
 # Logs
 logs
