@@ -201,22 +201,17 @@ export default function Employees() {
                 if (!dataToUpdate.password) delete dataToUpdate.password;
                 await FirebaseService.updateData('users', id, dataToUpdate);
             } else {
-                const { email, password, name, role, departmentId, photo, descriptor } = currentEmp;
+                const { email, password, name, role, departmentId, scheduleId, photo, descriptor } = currentEmp;
 
-                // On utilise AuthService.register (Client-side) pour que ça marche même avec le compte mock admin
-                const newUser = await AuthService.register(email, password);
-
-                // Sauvegarde des données complémentaires dans Firestore
-                await FirebaseService.setDocument('users', newUser.uid, {
-                    uid: newUser.uid,
-                    email: email,
-                    name: name,
+                // On utilise le backend (Admin SDK) pour créer l'employé
+                // Cela évite les erreurs "email-already-in-use" sur les comptes orphelins
+                await ApiService.createUser({
+                    email, password, name,
                     role: role || 'employee',
                     departmentId: departmentId || '',
                     scheduleId: scheduleId || '',
                     photo: photo || null,
                     descriptor: descriptor || null,
-                    createdAt: new Date().toISOString()
                 });
                 alert("Employé créé avec succès !");
             }
